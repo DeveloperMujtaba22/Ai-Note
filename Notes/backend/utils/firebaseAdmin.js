@@ -1,10 +1,12 @@
 import admin from "firebase-admin"
+import { createRequire } from "module"
 
-// Lightweight init using just projectId (no service account file needed for ID token verification)
+const require = createRequire(import.meta.url)
+const serviceAccount = require("../serviceAccount.json")
+
 if (!admin.apps.length) {
   admin.initializeApp({
-    credential: admin.credential.applicationDefault(),
-    projectId: process.env.FIREBASE_PROJECT_ID,
+    credential: admin.credential.cert(serviceAccount),
   })
 }
 
