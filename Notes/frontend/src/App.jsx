@@ -7,9 +7,10 @@ export const serverUrl = "http://localhost:4000"
 
 function App() {
  
-  useEffect(()=>{
-    getCurrentUser()
-  },[])
+ useEffect(() => {
+  const token = localStorage.getItem("token")
+  if (token) getCurrentUser()
+}, [])
   return (
     <>
     <Routes>

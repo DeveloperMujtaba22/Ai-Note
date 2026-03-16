@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { motion } from "motion/react"
 import { auth, googleProvider } from "../config/firebase"
-import { ProviderId, signInWithPopup } from "firebase/auth"
+import { signInWithPopup } from "firebase/auth"   // ← remove ProviderId
 import { useNavigate } from "react-router-dom"
 import axios from "axios"
 import { serverUrl } from "../App"
@@ -97,41 +97,32 @@ export default function Auth() {
     return () => document.head.removeChild(link)
   }, [])
 
-  // ✅ THIS WAS MISSING
   const handleGoogleSignIn = async () => {
-    try {
-      setLoading(true)
-      setError(null)
-      const response = await signInWithPopup(auth, ProviderId)
-      const User = response.user
-      const name = User.displayName
-      const email = User.email
-      const result = await axios.post(serverUrl + "/api/auth/google", {name, email},{
-        withCredentials:true
-      }) 
-      console.log(result.data)
+  try {
+    setLoading(true)
+    setError(null)
 
-      const idToken = await result.user.getIdToken()
+    // 1. Firebase popup
+    const response = await signInWithPopup(auth, googleProvider)  // ← googleProvider, not ProviderId
+    const idToken = await response.user.getIdToken()              // ← get token from firebase user
 
-      const res = await fetch("http://localhost:4000/api/auth/google", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({ idToken }),
-      })
+    // 2. Send idToken to your backend
+    const res = await axios.post(
+      serverUrl + "/api/auth/google",
+      { idToken },                   // ← backend expects { idToken }
+      { withCredentials: true }
+    )
 
-      if (!res.ok) throw new Error("Backend auth failed")
-
-      const data = await res.json()
-      localStorage.setItem("token", data.token)
-      navigate("/")
-    } catch (err) {
-      console.error(err)
-      setError("Sign-in failed. Please try again.")
-    } finally {
-      setLoading(false)
-    }
+    // 3. Store JWT and navigate
+    localStorage.setItem("token", res.data.token)
+    navigate("/")
+  } catch (err) {
+    console.error(err)
+    setError("Sign-in failed. Please try again.")
+  } finally {
+    setLoading(false)
   }
+}
 
   return (
     <div style={{
