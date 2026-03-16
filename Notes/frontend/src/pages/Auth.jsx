@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react"
 import { motion } from "motion/react"
 import { auth, googleProvider } from "../config/firebase"
-import { signInWithPopup } from "firebase/auth"
+import { ProviderId, signInWithPopup } from "firebase/auth"
 import { useNavigate } from "react-router-dom"
+import axios from "axios"
+import { serverUrl } from "../App"
 
 const ease = [0.22, 1, 0.36, 1]
 const stagger = {
@@ -100,8 +102,15 @@ export default function Auth() {
     try {
       setLoading(true)
       setError(null)
+      const response = await signInWithPopup(auth, ProviderId)
+      const User = response.user
+      const name = User.displayName
+      const email = User.email
+      const result = await axios.post(serverUrl + "/api/auth/google", {name, email},{
+        withCredentials:true
+      }) 
+      console.log(result.data)
 
-      const result  = await signInWithPopup(auth, googleProvider)
       const idToken = await result.user.getIdToken()
 
       const res = await fetch("http://localhost:4000/api/auth/google", {
