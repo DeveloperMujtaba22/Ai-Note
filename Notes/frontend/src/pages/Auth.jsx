@@ -5,6 +5,9 @@ import { signInWithPopup } from "firebase/auth"   // ← remove ProviderId
 import { useNavigate } from "react-router-dom"
 import axios from "axios"
 import { serverUrl } from "../App"
+import { getCurrentUser } from "../services/api"
+import { useDispatch } from "react-redux"
+
 
 const ease = [0.22, 1, 0.36, 1]
 const stagger = {
@@ -85,6 +88,7 @@ function Feature({ icon, title, desc }) {
 
 export default function Auth() {
   const navigate = useNavigate()
+   const dispatch = useDispatch()  
   const [loading, setLoading] = useState(false)
   const [error, setError]     = useState(null)
 
@@ -98,31 +102,29 @@ export default function Auth() {
   }, [])
 
   const handleGoogleSignIn = async () => {
-  try {
-    setLoading(true)
-    setError(null)
+    try {
+      setLoading(true)
+      setError(null)
 
-    // 1. Firebase popup
-    const response = await signInWithPopup(auth, googleProvider)  // ← googleProvider, not ProviderId
-    const idToken = await response.user.getIdToken()              // ← get token from firebase user
+      const response = await signInWithPopup(auth, googleProvider)
+      const idToken = await response.user.getIdToken()
 
-    // 2. Send idToken to your backend
-    const res = await axios.post(
-      serverUrl + "/api/auth/google",
-      { idToken },                   // ← backend expects { idToken }
-      { withCredentials: true }
-    )
+      const res = await axios.post(
+        serverUrl + "/api/auth/google",
+        { idToken },
+        { withCredentials: true }
+      )
 
-    // 3. Store JWT and navigate
-    localStorage.setItem("token", res.data.token)
-    navigate("/")
-  } catch (err) {
-    console.error(err)
-    setError("Sign-in failed. Please try again.")
-  } finally {
-    setLoading(false)
+      localStorage.setItem("token", res.data.token)
+      await getCurrentUser(dispatch)   // ← dispatch works now (inside component)
+      navigate("/")
+    } catch (err) {
+      console.error(err)
+      setError("Sign-in failed. Please try again.")
+    } finally {
+      setLoading(false)
+    }
   }
-}
 
   return (
     <div style={{
