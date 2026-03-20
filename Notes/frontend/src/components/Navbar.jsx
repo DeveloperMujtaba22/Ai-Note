@@ -43,7 +43,6 @@ const Navbar = () => {
     return () => document.removeEventListener("mousedown", handleClick)
   }, [])
 
-  // Lock body scroll when bottom sheet open
   useEffect(() => {
     document.body.style.overflow = mobileOpen ? "hidden" : ""
     return () => { document.body.style.overflow = "" }
@@ -65,7 +64,7 @@ const Navbar = () => {
 
   const menuItems = [
     { icon: "📄", label: "My Notes", action: () => navigate("/") },
-    { icon: "🕓", label: "History", action: () => navigate("/history") },
+    { icon: "🕓", label: "History",  action: () => navigate("/history") },
     { icon: "⚙️", label: "Settings", action: () => navigate("/settings") },
   ]
 
@@ -77,7 +76,7 @@ const Navbar = () => {
         transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
         style={{
           position: "fixed", top: 16, left: "50%", x: "-50%",
-          zIndex: 100, width: "90%", maxWidth: 1000,
+          zIndex: 100, width: "90%", maxWidth: 1200,
           background: "#374151",
           border: scrolled
             ? "1px solid rgba(176,125,58,0.35)"
@@ -110,14 +109,12 @@ const Navbar = () => {
         {/* ── DESKTOP ── */}
         {!isMobile && (
           <>
-            {/* Nav links */}
             <div style={{ display: "flex", gap: 28 }}>
               {links.map((item, i) => (
                 <NavLink key={item} label={item} delay={0.1 + i * 0.07} />
               ))}
             </div>
 
-            {/* Right side */}
             <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
 
               {/* Credits pill */}
@@ -159,7 +156,11 @@ const Navbar = () => {
                         zIndex: 200,
                       }}
                     >
-                      <CreditsDropdownContent credits={credits} />
+                      {/* ✅ onBuy prop passed correctly */}
+                      <CreditsDropdownContent
+                        credits={credits}
+                        onBuy={() => { setShowCredits(false); navigate("/pricing") }}
+                      />
                     </motion.div>
                   )}
                 </AnimatePresence>
@@ -203,15 +204,23 @@ const Navbar = () => {
                         zIndex: 200,
                       }}
                     >
-                      <div style={{ padding: "8px 12px 10px", borderBottom: "1px solid rgba(255,255,255,0.08)", marginBottom: 4 }}>
+                      <div style={{
+                        padding: "8px 12px 10px",
+                        borderBottom: "1px solid rgba(255,255,255,0.08)",
+                        marginBottom: 4,
+                      }}>
                         <p style={{ fontSize: 14, fontWeight: 600, color: "#f5f1eb", margin: 0 }}>
                           {userData?.name ?? "User"}
                         </p>
                       </div>
+
                       {menuItems.map(({ icon, label, action }) => (
-                        <ProfileMenuItem key={label} icon={icon} label={label}
-                          onClick={() => { action(); setShowProfile(false) }} />
+                        <ProfileMenuItem
+                          key={label} icon={icon} label={label}
+                          onClick={() => { action(); setShowProfile(false) }}
+                        />
                       ))}
+
                       <div style={{ borderTop: "1px solid rgba(255,255,255,0.08)", margin: "4px 0" }} />
                       <ProfileMenuItem icon="🚪" label="Log out" onClick={handleLogout} danger />
                     </motion.div>
@@ -249,7 +258,6 @@ const Navbar = () => {
       <AnimatePresence>
         {mobileOpen && (
           <>
-            {/* Backdrop */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -262,7 +270,6 @@ const Navbar = () => {
               }}
             />
 
-            {/* Sheet */}
             <motion.div
               initial={{ y: "100%" }}
               animate={{ y: 0 }}
@@ -330,7 +337,6 @@ const Navbar = () => {
                 ))}
               </div>
 
-              {/* Divider */}
               <div style={{ borderTop: "1px solid rgba(255,255,255,0.07)", margin: "4px 16px 8px" }} />
 
               {/* App menu items */}
@@ -355,11 +361,12 @@ const Navbar = () => {
                   </motion.button>
                 ))}
 
-                {/* Buy Credits */}
+                {/* ✅ Buy Credits — onClick fixed */}
                 <motion.button
                   initial={{ opacity: 0, x: -12 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.3 }}
+                  onClick={() => { navigate("/pricing"); setMobileOpen(false) }}
                   style={{
                     width: "100%", display: "flex", alignItems: "center", gap: 14,
                     background: "rgba(176,125,58,0.1)",
@@ -374,7 +381,6 @@ const Navbar = () => {
                 </motion.button>
               </div>
 
-              {/* Divider */}
               <div style={{ borderTop: "1px solid rgba(255,255,255,0.07)", margin: "12px 16px 8px" }} />
 
               {/* Logout */}
@@ -459,7 +465,8 @@ function CoinSVG({ size = 16 }) {
   )
 }
 
-function CreditsDropdownContent({ credits }) {
+// ✅ Accepts onBuy prop — no more scope error
+function CreditsDropdownContent({ credits, onBuy }) {
   return (
     <>
       <h4 style={{ fontSize: 15, fontWeight: 600, marginBottom: 8 }}>Buy Credits</h4>
@@ -480,12 +487,15 @@ function CreditsDropdownContent({ credits }) {
           />
         </div>
       </div>
-      <button style={{
-        width: "100%", padding: "8px 0", borderRadius: 8,
-        background: "linear-gradient(to right, #d4a85a, #b07d3a)",
-        color: "#1a1714", border: "none", cursor: "pointer",
-        fontSize: 14, fontWeight: 600,
-      }}>
+      <button
+        onClick={onBuy}
+        style={{
+          width: "100%", padding: "8px 0", borderRadius: 8,
+          background: "linear-gradient(to right, #d4a85a, #b07d3a)",
+          color: "#1a1714", border: "none", cursor: "pointer",
+          fontSize: 14, fontWeight: 600,
+        }}
+      >
         Buy More Credits
       </button>
     </>

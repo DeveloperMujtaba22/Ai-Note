@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import Navbar from '../components/Navbar'
 import { motion } from "motion/react"
 import logo from "../assets/logo.png"
+import Footer from '../components/Footer'
 
 const ease = [0.22, 1, 0.36, 1]
 
@@ -312,56 +313,7 @@ export default function Home() {
         </motion.div>
       </section>
 
-      {/* ── HOW IT WORKS ── */}
-      <section style={{
-        maxWidth: 1100, margin: "0 auto",
-        padding: isMobile ? "48px 24px" : "72px 40px",
-        display: "grid",
-        gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
-        gap: isMobile ? 40 : 80,
-        alignItems: "center",
-        position: "relative", zIndex: 1,
-      }}>
-        <motion.div variants={stagger} initial="hidden" whileInView="show" viewport={{ once: true, amount: 0.2 }}>
-          <motion.p variants={fadeUp} style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.12em", color: ACCENT2, textTransform: "uppercase", fontFamily: "'Lora', serif", marginBottom: 12 }}>
-            How it works
-          </motion.p>
-          <motion.h2 variants={fadeUp} style={{ fontFamily: "'Lora', serif", fontSize: isMobile ? 24 : 32, fontWeight: 700, color: TEXT, letterSpacing: "-0.02em", marginBottom: 36 }}>
-            Topic to notes<br />in three steps
-          </motion.h2>
-          <div style={{ display: "flex", flexDirection: "column", gap: 28 }}>
-            {steps.map((s, i) => <StepItem key={i} {...s} />)}
-          </div>
-        </motion.div>
-
-        {!isMobile && (
-          <motion.div
-            initial={{ opacity: 0, x: 30 }} whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }} transition={{ duration: 0.7, ease }}
-            style={{ background: "rgba(255,255,255,0.025)", border: `1px solid ${BORDER}`, borderRadius: 20, padding: 28 }}
-          >
-            <div style={{ marginBottom: 20 }}>
-              <p style={{ fontSize: 11, color: MUTED, fontFamily: "'Lora', serif", marginBottom: 8 }}>Topic</p>
-              <div style={{ background: ACCENTGL, border: `1px solid rgba(59,130,246,0.25)`, borderRadius: 10, padding: "12px 16px", display: "flex", justifyContent: "space-between" }}>
-                <span style={{ fontSize: 13, color: ACCENT2, fontFamily: "'Lora', serif" }}>Newton's Laws of Motion</span>
-                <span>📝</span>
-              </div>
-            </div>
-            {[{ label: "Overview", lines: ["88%","72%","58%"] }, { label: "Key Terms", lines: ["62%","50%"] }, { label: "Exam Tips", lines: ["75%","55%"] }].map(({ label, lines }) => (
-              <div key={label} style={{ marginBottom: 16 }}>
-                <p style={{ fontSize: 10, fontWeight: 700, color: ACCENT2, fontFamily: "'Lora', serif", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 8 }}>{label}</p>
-                {lines.map((w, i) => <div key={i} style={{ width: w, height: 8, background: "rgba(255,255,255,0.07)", borderRadius: 4, marginBottom: 6 }} />)}
-              </div>
-            ))}
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", paddingTop: 16, borderTop: `1px solid ${BORDER}` }}>
-              <span style={{ fontSize: 12, color: MUTED, fontFamily: "'Lora', serif" }}>✅ Ready</span>
-              <div style={{ display: "flex", alignItems: "center", gap: 6, background: ACCENTGL, border: `1px solid rgba(59,130,246,0.25)`, borderRadius: 8, padding: "7px 14px", fontSize: 12, color: ACCENT2, fontWeight: 600, fontFamily: "'Lora', serif" }}>
-                ⬇️ Download PDF
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </section>
+    
 
       {/* ── CTA ── */}
       <section style={{ maxWidth: 1100, margin: "0 auto", padding: isMobile ? "48px 24px 88px" : "64px 40px 110px", position: "relative", zIndex: 1 }}>
@@ -405,6 +357,7 @@ export default function Home() {
           </motion.button>
         </motion.div>
       </section>
+      <Footer/>
     </div>
   )
 }
