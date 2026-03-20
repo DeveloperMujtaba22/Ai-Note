@@ -3,6 +3,7 @@ import Navbar from '../components/Navbar'
 import { motion } from "motion/react"
 import logo from "../assets/logo.png"
 import Footer from '../components/Footer'
+import { useNavigate } from 'react-router-dom'
 
 const ease = [0.22, 1, 0.36, 1]
 
@@ -49,6 +50,7 @@ const PREVIEW_LINES = [
 ]
 
 function NotePreview() {
+  
   const [revealed, setRevealed] = useState(0)
   useEffect(() => {
     if (revealed >= PREVIEW_LINES.length) return
@@ -152,6 +154,7 @@ function StepItem({ n, title, desc }) {
 }
 
 export default function Home() {
+  const navigate = useNavigate()
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768)
 
   useEffect(() => {
@@ -236,7 +239,8 @@ export default function Home() {
           </motion.p>
 
           <motion.div variants={fadeUp} style={{ display: "flex", gap: 12, flexWrap: "wrap", marginBottom: 40 }}>
-            <motion.button
+            <motion.button 
+            onClick={() =>navigate("/notes")}
               whileHover={{ scale: 1.03, boxShadow: `0 16px 48px rgba(59,130,246,0.4)` }}
               whileTap={{ scale: 0.97 }}
               style={{
@@ -359,5 +363,5 @@ export default function Home() {
       </section>
       <Footer/>
     </div>
-  )
+  ) 
 }
