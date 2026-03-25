@@ -95,10 +95,10 @@ const Notes = () => {
       <motion.div>
         <Topic loading={loading} setResult={setResult} setLoading={setLoading} setError={setError}/>
       </motion.div>
-      <motion.div>
+     { ! result && <motion.div>
         <span>📘</span>
         <p>Generate notes will appear here</p>
-      </motion.div>
+      </motion.div>}
 
     </div>
   )
