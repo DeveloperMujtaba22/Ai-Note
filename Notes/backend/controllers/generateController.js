@@ -1,5 +1,6 @@
 import User from "../models/user.js";
-import { generateGeminiResponse } from "../services/gemini";
+import Notes from "../models/notes.js";
+import { generateGeminiResponse } from "../services/gemini.js"; // ← added .js
 import { buildPrompt } from "../utils/promptBuilder.js";
 
 export const generateNotes = async (req, res) => {
@@ -11,65 +12,52 @@ export const generateNotes = async (req, res) => {
       revisionMode = false,
       includeDiagram = false,
       includeChart = false,
-    } = req.body();
+    } = req.body; // ← was req.body() — body is not a function
+
     if (!topic) {
-      return res.status(400).json({ message: "Topic is required  " });
+      return res.status(400).json({ message: "Topic is required" });
     }
+
     const user = await User.findById(req.userId);
     if (!user) {
-      return res.status(400).json({ message: "user is not found  " });
+      return res.status(404).json({ message: "User not found" });
     }
 
     if (user.credits < 10) {
       user.isCreditAvailable = false;
       await user.save();
-      return res.status(403).json({
-        message: "Insufficient credits",
-      });
+      return res.status(403).json({ message: "Insufficient credits" });
     }
+
     const prompt = buildPrompt({
-      topic,
-      classLevel,
-      examType,
-      revisionMode,
-      includeDiagram,
-      includeChart,
+      topic, classLevel, examType,
+      revisionMode, includeDiagram, includeChart,
     });
 
-    const aiResponse = generateGeminiResponse(prompt);
+    const aiResponse = await generateGeminiResponse(prompt); // ← was missing await
 
-    const notes = await Notes.create({
+    const note = await Notes.create({ // ← renamed to `note` (singular) for consistency
       user: user._id,
-      topic,
-      classLevel,
-      examType,
-      revisionMode,
-      includeDiagram,
-      includeChart,
-      content:aiResponse
+      topic, classLevel, examType,
+      revisionMode, includeDiagram, includeChart,
+      content: aiResponse,
     });
 
     user.credits -= 10;
-    if(user.credits <=0) user.isCreditAvailable = false
+    if (user.credits <= 0) user.isCreditAvailable = false;
 
-    if(!Array.isArray(user.notes)){
-        user.notes = [];
-    }
-    user.notes.push(note._id);
+    if (!Array.isArray(user.notes)) user.notes = [];
+    user.notes.push(note._id); // ← was `notes._id` (wrong variable name)
 
     await user.save();
 
     return res.status(200).json({
-        data: aiResponse,
-        noteId: note._id,
-        creditLeft: user.credits
-    })
+      data: aiResponse,
+      noteId: note._id,
+      creditLeft: user.credits,
+    });
   } catch (error) {
     console.error(error);
-    res.status(500).json({
-        error:"Ai generation failed ",
-        message:error.message
-    });
-
+    res.status(500).json({ error: "AI generation failed", message: error.message });
   }
 };
