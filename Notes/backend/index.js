@@ -5,6 +5,7 @@ import cookieParser from "cookie-parser"
 import connectDB from "./utils/connectDB.js"
 import authRoutes from "./routes/authRoutes.js"
 import userRoutes from "./routes/userRoutes.js"
+import notesRoutes from "./routes/generateRoutes.js"
 
 dotenv.config()
 
@@ -21,6 +22,7 @@ app.use(cookieParser())
 
 app.use("/api/auth", authRoutes)
 app.use("/api/user", userRoutes)
+app.use("/api/notes", notesRoutes)
 
 app.get("/", (req, res) => res.json({ message: "ExamNote AI backend running 🎆" }))
 
