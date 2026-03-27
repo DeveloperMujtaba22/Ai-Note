@@ -1,6 +1,6 @@
 import User from "../models/user.js";
 import Notes from "../models/notes.js";
-import { generateGeminiResponse } from "../services/gemini.js"; // ← added .js
+import { generateGeminiResponse } from "../services/gemini.js";
 import { buildPrompt } from "../utils/promptBuilder.js";
 
 export const generateNotes = async (req, res) => {
@@ -12,7 +12,7 @@ export const generateNotes = async (req, res) => {
       revisionMode = false,
       includeDiagram = false,
       includeChart = false,
-    } = req.body; // ← was req.body() — body is not a function
+    } = req.body;
 
     if (!topic) {
       return res.status(400).json({ message: "Topic is required" });
@@ -34,9 +34,9 @@ export const generateNotes = async (req, res) => {
       revisionMode, includeDiagram, includeChart,
     });
 
-    const aiResponse = await generateGeminiResponse(prompt); // ← was missing await
+    const aiResponse = await generateGeminiResponse(prompt);
 
-    const note = await Notes.create({ // ← renamed to `note` (singular) for consistency
+    const note = await Notes.create({
       user: user._id,
       topic, classLevel, examType,
       revisionMode, includeDiagram, includeChart,
@@ -47,7 +47,7 @@ export const generateNotes = async (req, res) => {
     if (user.credits <= 0) user.isCreditAvailable = false;
 
     if (!Array.isArray(user.notes)) user.notes = [];
-    user.notes.push(note._id); // ← was `notes._id` (wrong variable name)
+    user.notes.push(note._id);
 
     await user.save();
 
@@ -58,6 +58,12 @@ export const generateNotes = async (req, res) => {
     });
   } catch (error) {
     console.error(error);
+    if (error.message === "QUOTA_EXCEEDED") {
+      return res.status(429).json({
+        error: "AI quota exceeded",
+        message: "Too many requests. Please try again in a minute.",
+      });
+    }
     res.status(500).json({ error: "AI generation failed", message: error.message });
-  }
-};
+  }  // ← closes try/catch
+};   // ← closes generateNotes function — this was missing

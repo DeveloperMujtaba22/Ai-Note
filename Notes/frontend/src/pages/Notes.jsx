@@ -100,6 +100,24 @@ const Notes = () => {
         <p>Generate notes will appear here</p>
       </motion.div>}
 
+      {error && (
+  <motion.p
+    initial={{ opacity: 0, y: -8 }}
+    animate={{ opacity: 1, y: 0 }}
+    style={{
+      textAlign: "center", fontSize: 13,
+      color: "#f87171", marginTop: 12,
+      padding: "10px 16px",
+      background: "rgba(248,113,113,0.08)",
+      border: "1px solid rgba(248,113,113,0.2)",
+      borderRadius: 10,
+      maxWidth: 560, margin: "12px auto 0",
+    }}
+  >
+    ⚠️ {error}
+  </motion.p>
+)}
+
     </div>
   )
 }

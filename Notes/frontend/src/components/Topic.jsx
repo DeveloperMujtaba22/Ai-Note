@@ -43,15 +43,17 @@ export default function Topic({ setResult, setLoading, loading, setError }) {
     setResult(null)
     try {
       // ✅ Fix 1: await was missing
-      const result = await generateNotes({
-        topic, classLevel, examType,
-        revisionMode, includeDiagram, includeChart,
-      })
-      setResult(result.data)
+     // Topic.jsx — in handleSubmit
+const result = await generateNotes({
+  topic, classLevel, examType,
+  revisionMode, includeDiagram, includeChart,
+})
+setResult(result)        // ← was result.data, but api.js already returns result.data
     } catch (err) {
-      console.error(err)
-      setError("Failed to fetch notes from server")
-    } finally {
+  console.error(err)
+  const msg = err.response?.data?.message || "Failed to fetch notes from server"
+  setError(msg)  // will now show "Too many requests. Please try again in a minute."
+} finally {
       setLoading(false)
     }
   }
