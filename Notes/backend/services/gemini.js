@@ -1,7 +1,9 @@
-const Gemini_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent"
+const Gemini_URL = "https://generativelanguage.googleapis.com/v1/models/gemini-2.0-flash:generateContent"
 
 export const generateGeminiResponse = async (prompt) => {
   try {
+    console.log("KEY:", process.env.GEMINI_API_KEY)
+
     const response = await fetch(`${Gemini_URL}?key=${process.env.GEMINI_API_KEY}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -21,7 +23,6 @@ export const generateGeminiResponse = async (prompt) => {
 
     if (!text) throw new Error("No text returned from Gemini")
 
-    // More aggressive cleaning — strip everything before first { and after last }
     const firstBrace = text.indexOf("{")
     const lastBrace  = text.lastIndexOf("}")
 

@@ -106,7 +106,7 @@ const Notes = () => {
     animate={{ opacity: 1, y: 0 }}
     style={{
       textAlign: "center", fontSize: 13,
-      color: "#f87171", marginTop: 12,
+      color: "#f87171", 
       padding: "10px 16px",
       background: "rgba(248,113,113,0.08)",
       border: "1px solid rgba(248,113,113,0.2)",
