@@ -35,6 +35,7 @@ export const generateNotes = async (req, res) => {
     });
 
     const aiResponse = await generateGeminiResponse(prompt);
+    console.log("AI Response:", aiResponse);  
 
     const note = await Notes.create({
       user: user._id,
@@ -58,12 +59,12 @@ export const generateNotes = async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-    if (error.message === "QUOTA_EXCEEDED") {
-      return res.status(429).json({
-        error: "AI quota exceeded",
-        message: "Too many requests. Please try again in a minute.",
-      });
-    }
+   if (error.message === "QUOTA_EXCEEDED") {
+  return res.status(429).json({
+    error: "AI quota exceeded",
+    message: "Our AI service is temporarily unavailable. Please try again later.",
+  })
+}
     res.status(500).json({ error: "AI generation failed", message: error.message });
   }  // ← closes try/catch
 };   // ← closes generateNotes function — this was missing

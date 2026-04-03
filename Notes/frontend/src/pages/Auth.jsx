@@ -118,22 +118,24 @@ export default function Auth() {
   }, [])
 
   const handleGoogleSignIn = async () => {
-    try {
-      setLoading(true)
-      setError(null)
-      const response = await signInWithPopup(auth, googleProvider)
-      const idToken = await response.user.getIdToken()
-      const res = await axios.post(serverUrl + "/api/auth/google", { idToken }, { withCredentials: true })
-      localStorage.setItem("token", res.data.token)
-      await getCurrentUser(dispatch)
-      navigate("/")
-    } catch (err) {
-      console.error(err)
-      setError("Sign-in failed. Please try again.")
-    } finally {
-      setLoading(false)
-    }
+  try {
+    setLoading(true)
+    setError(null)
+    const response = await signInWithPopup(auth, googleProvider)
+    const idToken = await response.user.getIdToken()
+    const res = await axios.post(serverUrl + "/api/auth/google", { idToken }, { withCredentials: true })
+    localStorage.setItem("token", res.data.token)
+    await getCurrentUser(dispatch)
+    navigate("/")
+  } catch (err) {
+    // ✅ Ignore popup-closed — not a real error
+    if (err.code === "auth/popup-closed-by-user") return
+    console.error(err)
+    setError("Sign-in failed. Please try again.")
+  } finally {
+    setLoading(false)
   }
+}
 
   return (
     <div style={{
